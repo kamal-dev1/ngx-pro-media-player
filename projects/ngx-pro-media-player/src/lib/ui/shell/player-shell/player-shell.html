@@ -1,0 +1,237 @@
+<div class="player-wrapper" [dir]="store.direction()">
+  <ng-container *ngIf="store.currentMedia() as current">
+    <div class="video-stage" [class.video-stage--hidden]="current.type !== 'video' || store.isMinimized()">
+        <video
+          #videoPlayer
+          playsinline
+          preload="auto"
+          [poster]="current.type === 'video' ? coverOf(current) : ''"
+          (dblclick)="toggleFullscreen(videoPlayer)"
+        ></video>
+      </div>
+
+
+    <ng-container *ngIf="store.queueOpen() && !store.isMinimized()">
+      <aside class="panel queue-panel">
+        <header>
+          <span class="panel-title">
+            <svg class="panel-title__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+            <span class="sr-only">{{ i18n.t().queue }}</span>
+          </span>
+          <button type="button" class="icon-btn icon-btn--ghost" (click)="toggleQueue()" [attr.aria-label]="i18n.t().close"
+          [title]="i18n.t().close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </header>
+        <ul cdkDropList (cdkDropListDropped)="onDrop($event)">
+          <li
+            *ngFor="let item of store.queue(); trackBy: trackById; let i = index"
+            cdkDrag
+            [class.active]="i === store.currentIndex()"
+            (click)="playByIndex(i)"
+          >
+            <img [src]="coverOf(item)" [alt]="item.title" />
+            <div>
+              <h4>{{ item.title }}</h4>
+              <p>{{ item.artist || '-' }}</p>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </ng-container>
+
+    <ng-container *ngIf="store.lyricsOpen() && !store.isMinimized()">
+      <aside class="panel lyrics-panel">
+        <header>
+          <span class="panel-title">
+            <svg class="panel-title__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            <span class="sr-only">{{ i18n.t().lyrics }}</span>
+          </span>
+          <button type="button" class="icon-btn icon-btn--ghost" (click)="toggleLyrics()" [attr.aria-label]="i18n.t().close" [title]="i18n.t().close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </header>
+        <ul>
+          <li *ngFor="let line of current.lyrics || []">{{ line.text }}</li>
+        </ul>
+      </aside>
+    </ng-container>
+
+    <div class="player-shell" [class.minimized]="store.isMinimized()">
+      <div class="seek-row">
+        <span class="time">{{ formattedTime(store.currentTime()) }}</span>
+        <div class="seek-wrap">
+          <input
+            type="range"
+            class="seek"
+            min="0"
+            [max]="store.duration() || 0"
+            [value]="store.currentTime()"
+            [style]="seekTrackStyle()"
+            (input)="seek(getEventValue($event))"
+          />
+        </div>
+        <span class="time">{{ formattedTime(store.duration()) }}</span>
+      </div>
+
+      <div class="content-row">
+        <div class="media-meta">
+          <div class="media-meta__art">
+            <img [src]="coverOf(current)" [alt]="current.title" />
+          </div>
+          <div class="media-meta__text">
+            <h4>{{ current.title }}</h4>
+            <p>{{ current.artist || '—' }}</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button
+            type="button"
+            class="icon-btn"
+            [class.icon-btn--on]="store.shuffle()"
+            (click)="toggleShuffle()"
+            [attr.aria-label]="i18n.t().shuffle"
+            [title]="i18n.t().shuffle"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 3h5v5" />
+              <path d="M4 20 10 14" />
+              <path d="M21 16v5h-5" />
+              <path d="M14 14l6 6" />
+              <path d="M4 4l6 6" />
+              <path d="M10 10 4 4" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" (click)="previous()"[attr.aria-label]="i18n.t().previous" [title]="i18n.t().previous">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="22 5 22 19 8 12 22 5" />
+              <rect x="2" y="5" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="play-btn"
+            [class.play-btn--playing]="store.isPlaying()"
+            (click)="togglePlayPause()"
+            [attr.aria-label]="store.isPlaying() ? i18n.t().pause : i18n.t().play"
+            [title]="store.isPlaying() ? i18n.t().pause : i18n.t().play"
+          >
+            <svg *ngIf="!store.isPlaying()" class="play-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="8 5 8 19 19 12 8 5" />
+            </svg>
+            <svg *ngIf="store.isPlaying()" class="play-btn__icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" (click)="next()" [attr.aria-label]="i18n.t().next" [title]="i18n.t().next">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="2 5 2 19 16 12 2 5" />
+              <rect x="18" y="5" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="icon-btn"
+            [class.icon-btn--on]="store.repeatMode() !== 'off'"
+            [class.icon-btn--repeat-one]="store.repeatMode() === 'one'"
+            (click)="cycleRepeat()"
+            [attr.aria-label]="i18n.t().repeat"
+            [title]="i18n.t().repeat + ' (' + store.repeatMode() + ')'"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M17 1l4 4-4 4" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <path d="M7 23l-4-4 4-4" />
+              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="utility">
+          <button
+            type="button"
+            class="icon-btn"
+            [class.icon-btn--on]="store.muted()"
+            (click)="toggleMute()"
+            [attr.aria-label]="i18n.t().mute"
+            [title]="i18n.t().mute"
+          >
+            <svg *ngIf="!store.muted()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+            <svg *ngIf="store.muted()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          </button>
+          <div class="vol-wrap">
+            <input type="range" class="vol" min="0" max="1" step="0.01" [value]="store.volume()" (input)="setVolume(getEventValue($event))" [attr.aria-label]="i18n.t().volume" />
+          </div>
+          <div class="speed-wrap">
+            <span class="speed-wrap__glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </span>
+            <label class="sr-only" for="pm-speed">{{ i18n.t().speed }}</label>
+            <select id="pm-speed" class="speed-select" [ngModel]="store.playbackRate()" (ngModelChange)="setRate($event)">
+              <option [ngValue]="0.75">0.75×</option>
+              <option [ngValue]="1">1×</option>
+              <option [ngValue]="1.25">1.25×</option>
+              <option [ngValue]="1.5">1.5×</option>
+              <option [ngValue]="2">2×</option>
+            </select>
+          </div>
+          <button type="button" class="icon-btn" [class.icon-btn--on]="store.queueOpen()" (click)="toggleQueue()"[attr.aria-label]="i18n.t().queue"
+          [title]="i18n.t().queue"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="8" y1="6" x2="21" y2="6" />
+              <line x1="8" y1="12" x2="21" y2="12" />
+              <line x1="8" y1="18" x2="21" y2="18" />
+              <line x1="3" y1="6" x2="3.01" y2="6" />
+              <line x1="3" y1="12" x2="3.01" y2="12" />
+              <line x1="3" y1="18" x2="3.01" y2="18" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" [class.icon-btn--on]="store.lyricsOpen()" (click)="toggleLyrics()" [attr.aria-label]="i18n.t().lyrics"
+          [title]="i18n.t().lyrics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" (click)="toggleMini()" ...>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+              [style.transform]="store.isMinimized() ? 'rotate(180deg)' : 'rotate(0deg)'"
+              style="transition: transform 0.25s ease">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
