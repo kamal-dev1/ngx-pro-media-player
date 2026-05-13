@@ -1,5 +1,5 @@
 {
-  "name": "@kamal3401/ngx-player-workspace",
+  "name": "ngx-player-workspace",
   "version": "0.0.6",
   "scripts": {
     "ng": "ng",

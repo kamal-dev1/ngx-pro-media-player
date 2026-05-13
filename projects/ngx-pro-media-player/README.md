@@ -2,12 +2,14 @@
 
 A lightweight Angular media player with audio, video, queue, crossfade, lyrics, and RTL support — built with Angular Signals, no extra dependencies.
 
+🔴 [Live Demo](https://kamal-dev1.github.io/ngx-pro-media-player/)
+
 ---
 
 ## Installation
 
 ```bash
-npm install @your-scope/ng-media-player @angular/cdk
+npm install ngx-pro-media-player @angular/cdk
 ```
 
 ---
@@ -17,10 +19,10 @@ npm install @your-scope/ng-media-player @angular/cdk
 Import the component:
 
 ```typescript
-import { PlayerShell } from '@your-scope/ng-media-player';
+import { NgxMediaPlayer } from 'ngx-pro-media-player';
 
 @Component({
-  imports: [PlayerShell],
+  imports: [NgxMediaPlayer],
 })
 export class AppComponent {}
 ```
@@ -28,13 +30,13 @@ export class AppComponent {}
 Add to your template:
 
 ```html
-<media-player [mediaList]="tracks" language="en" direction="ltr" />
+<ngx-media-player [mediaList]="tracks" language="en" direction="ltr" />
 ```
 
 Pass a single track as a one-item array:
 
 ```html
-<media-player [mediaList]="[track]" language="en" direction="ltr" />
+<ngx-media-player [mediaList]="[track]" language="en" direction="ltr" />
 ```
 
 ---
@@ -110,9 +112,7 @@ const tracks: MediaItem[] = [
 
 ---
 
-
 ## Support
 
 If this project saved you some time, consider buying me a coffee ☕
 
-<!-- [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/your-username) -->
