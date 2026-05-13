@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { PlayerShell } from './ui/shell/player-shell/player-shell';
+import { NgxMediaPlayer } from './ui/shell/player-shell/ngx-media-player';
 
 @Component({
   selector: 'lib-ngx-pro-media-player',
-  imports: [PlayerShell],
-  template: ` <media-player></media-player> `,
+  imports: [NgxMediaPlayer],
+  template: ` <ngx-media-player></ngx-media-player> `,
   styles: ``,
 })
 export class NgxProMediaPlayer {}

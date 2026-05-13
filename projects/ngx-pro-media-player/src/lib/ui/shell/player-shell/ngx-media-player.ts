@@ -18,12 +18,12 @@ import { I18nService } from '../../../i18n/i18n.service';
 
 
 @Component({
-  selector: 'media-player, lib-player-shell',
+  selector: 'ngx-media-player',
   imports: [CommonModule, FormsModule,DragDropModule],
-  templateUrl: './player-shell.html',
-  styleUrl: './player-shell.css',
+  templateUrl: './ngx-media-player.html',
+  styleUrl: './ngx-media-player.css',
 })
-export class PlayerShell {
+export class NgxMediaPlayer {
   readonly i18n = inject(I18nService);
   /** کراس‌فید ثابت (ثانیه) — فقط در کد؛ در UI تنظیم نمی‌شود */
   private static readonly CROSSFADE_SECONDS = 2.5;
@@ -49,7 +49,7 @@ export class PlayerShell {
   constructor() {
 
 
-    this.store.crossfadeSeconds.set(PlayerShell.CROSSFADE_SECONDS);
+    this.store.crossfadeSeconds.set(NgxMediaPlayer.CROSSFADE_SECONDS);
 
     effect(() => {
       this.store.language.set(this.language());

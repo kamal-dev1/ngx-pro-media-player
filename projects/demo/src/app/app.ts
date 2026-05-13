@@ -2,13 +2,13 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
   MediaItem,
-  PlayerShell
+  NgxMediaPlayer,
 } from 'ngx-pro-media-player';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,PlayerShell],
+  imports: [RouterOutlet,NgxMediaPlayer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

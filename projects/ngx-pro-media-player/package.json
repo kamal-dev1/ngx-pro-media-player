@@ -1,5 +1,13 @@
 {
   "name": "ngx-pro-media-player",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kamal3401/ngx-pro-media-player.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kamal3401/ngx-pro-media-player/issues"
+  },
+  "homepage": "https://github.com/kamal3401/ngx-pro-media-player#readme",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^21.2.0",

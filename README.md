@@ -7,7 +7,7 @@ A lightweight Angular media player with audio, video, queue, crossfade, lyrics, 
 ## Installation
 
 ```bash
-npm install @your-scope/ng-media-player @angular/cdk
+npm install ngx-pro-media-player @angular/cdk
 ```
 
 ---
@@ -17,7 +17,7 @@ npm install @your-scope/ng-media-player @angular/cdk
 Import the component:
 
 ```typescript
-import { PlayerShell } from '@your-scope/ng-media-player';
+import { PlayerShell } from 'ngx-pro-media-player';
 
 @Component({
   imports: [PlayerShell],

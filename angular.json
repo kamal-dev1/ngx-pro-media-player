@@ -48,6 +48,7 @@
           "options": {
             "browser": "projects/demo/src/main.ts",
             "tsConfig": "projects/demo/tsconfig.app.json",
+            "baseHref": "/ngx-pro-media-player/",
             "inlineStyleLanguage": "scss",
             "assets": [
               {

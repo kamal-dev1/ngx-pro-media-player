@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlayerShell } from './player-shell';
+import { NgxMediaPlayer } from './ngx-media-player';
 
 describe('PlayerShell', () => {
-  let component: PlayerShell;
-  let fixture: ComponentFixture<PlayerShell>;
+  let component: NgxMediaPlayer;
+  let fixture: ComponentFixture<NgxMediaPlayer>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PlayerShell],
+      imports: [NgxMediaPlayer],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PlayerShell);
+    fixture = TestBed.createComponent(NgxMediaPlayer);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
