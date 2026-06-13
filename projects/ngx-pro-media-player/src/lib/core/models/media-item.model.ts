@@ -21,6 +21,10 @@ export interface MediaItem {
     type: 'audio' | 'video';
   
     duration?: number;
-  
+
     lyrics?: LyricLine[];
+
+    liked?: boolean;
+
+    inPlaylist?: boolean;
   }

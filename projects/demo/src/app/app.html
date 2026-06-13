@@ -1,2 +1,100 @@
-<router-outlet />
-<ngx-media-player [mediaList]="mediaList" [language]="'fa'" [direction]="'rtl'" />
+<div class="demo-wrapper">
+
+    <header class="demo-header">
+      <div class="demo-header__brand">
+        <span class="demo-header__logo">▶</span>
+        <span class="demo-header__title">ngx-pro-media-player</span>
+        <span class="demo-header__badge">demo</span>
+      </div>
+      <div class="demo-header__actions">
+        <button class="demo-btn demo-btn--ghost" (click)="toggleLanguage()">
+          {{ language() === 'fa' ? '🌐 EN' : '🌐 FA' }}
+        </button>
+        <button class="demo-btn demo-btn--accent" (click)="panelOpen.set(true)">
+          + Add Media
+        </button>
+        <a class="demo-btn demo-btn--ghost" href="https://github.com/kamal-dev1/ngx-pro-media-player" target="_blank">
+          GitHub
+        </a>
+        <a class="demo-btn demo-btn--ghost" href="https://www.npmjs.com/package/ngx-pro-media-player" target="_blank">
+          npm
+        </a>
+      </div>
+    </header>
+  
+    <main class="demo-main">
+      <div class="demo-hero">
+        <h1 class="demo-hero__title">Angular Media Player</h1>
+        <p class="demo-hero__sub">Audio · Video · Queue · Crossfade · RTL · Signals</p>
+        <div class="demo-hero__install">
+          <code>npm install ngx-pro-media-player @angular/cdk</code>
+        </div>
+      </div>
+  
+      <section class="demo-tracklist">
+        <h2 class="demo-section-title">Current Playlist</h2>
+        <ul class="demo-tracks">
+          @for (item of mediaList(); track item.id) {
+            <li class="demo-track">
+              <img class="demo-track__cover" [src]="item.cover || 'https://picsum.photos/60/60?random=' + item.id" [alt]="item.title" />
+              <div class="demo-track__info">
+                <span class="demo-track__title">{{ item.title }}</span>
+                <span class="demo-track__artist">{{ item.artist || '—' }}</span>
+              </div>
+              <span class="demo-track__type" [class.demo-track__type--video]="item.type === 'video'">
+                {{ item.type }}
+              </span>
+              <button class="demo-track__remove" (click)="removeMedia(item.id)" title="Remove">✕</button>
+            </li>
+          }
+        </ul>
+      </section>
+    </main>
+  
+    <!-- Add Media Panel -->
+    @if (panelOpen()) {
+      <div class="demo-overlay" (click)="panelOpen.set(false)">
+        <div class="demo-panel" (click)="$event.stopPropagation()">
+          <div class="demo-panel__header">
+            <h3>Add Media</h3>
+            <button class="demo-panel__close" (click)="panelOpen.set(false)">✕</button>
+          </div>
+  
+          <div class="demo-panel__body">
+            <label class="demo-field">
+              <span>URL *</span>
+              <input [(ngModel)]="newMedia.url" placeholder="https://example.com/audio.mp3" />
+            </label>
+            <label class="demo-field">
+              <span>Title *</span>
+              <input [(ngModel)]="newMedia.title" placeholder="Track title" />
+            </label>
+            <label class="demo-field">
+              <span>Artist</span>
+              <input [(ngModel)]="newMedia.artist" placeholder="Artist name" />
+            </label>
+            <label class="demo-field">
+              <span>Cover URL</span>
+              <input [(ngModel)]="newMedia.cover" placeholder="https://example.com/cover.jpg" />
+            </label>
+            <label class="demo-field">
+              <span>Type</span>
+              <select [(ngModel)]="newMedia.type">
+                <option value="audio">Audio</option>
+                <option value="video">Video</option>
+              </select>
+            </label>
+          </div>
+  
+          <div class="demo-panel__footer">
+            <button class="demo-btn demo-btn--ghost" (click)="panelOpen.set(false)">Cancel</button>
+            <button class="demo-btn demo-btn--accent" (click)="addMedia()">Add to Playlist</button>
+          </div>
+        </div>
+      </div>
+    }
+  
+  </div>
+  
+  <router-outlet />
+  <ngx-media-player [mediaList]="mediaList()" [language]="language()" [direction]="direction()" (closed)="mediaList.set([])" />

@@ -17,6 +17,8 @@ const translations = {
     mini: 'مینی پلیر',
     close: 'بستن',
     volume: 'صدا',
+    like: 'پسندیدن',
+    addToPlaylist: 'افزودن به پلی‌لیست',
   },
   en: {
     queue: 'Queue',
@@ -32,6 +34,8 @@ const translations = {
     mini: 'Mini',
     close: 'Close',
     volume: 'Volume',
+    like: 'Like',
+    addToPlaylist: 'Add to Playlist',
   },
 } as const;
 

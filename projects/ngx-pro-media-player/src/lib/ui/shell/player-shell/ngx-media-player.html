@@ -50,7 +50,7 @@
       </aside>
     </ng-container>
 
-    <ng-container *ngIf="store.lyricsOpen() && !store.isMinimized()">
+    <ng-container *ngIf="store.lyricsOpen() && !store.isMinimized() && current.lyrics?.length">
       <aside class="panel lyrics-panel">
         <header>
           <span class="panel-title">
@@ -99,6 +99,17 @@
             <h4>{{ current.title }}</h4>
             <p>{{ current.artist || '—' }}</p>
           </div>
+          <button type="button" class="icon-btn" [class.icon-btn--on]="current.liked" (click)="likeCurrent()" [attr.aria-label]="i18n.t().like" [title]="i18n.t().like">
+            <svg [attr.fill]="current.liked ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" [class.icon-btn--on]="current.inPlaylist" (click)="addCurrentToPlaylist()" [attr.aria-label]="i18n.t().addToPlaylist" [title]="i18n.t().addToPlaylist">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19" [attr.transform]="current.inPlaylist ? 'rotate(45 12 12)' : null" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
         </div>
 
         <div class="controls">
@@ -216,7 +227,7 @@
               <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
           </button>
-          <button type="button" class="icon-btn" [class.icon-btn--on]="store.lyricsOpen()" (click)="toggleLyrics()" [attr.aria-label]="i18n.t().lyrics"
+          <button *ngIf="current.lyrics?.length" type="button" class="icon-btn" [class.icon-btn--on]="store.lyricsOpen()" (click)="toggleLyrics()" [attr.aria-label]="i18n.t().lyrics"
           [title]="i18n.t().lyrics">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M12 20h9" />
@@ -228,6 +239,12 @@
               [style.transform]="store.isMinimized() ? 'rotate(180deg)' : 'rotate(0deg)'"
               style="transition: transform 0.25s ease">
               <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          <button type="button" class="icon-btn icon-btn--close" (click)="closePlayer()" [attr.aria-label]="i18n.t().close" [title]="i18n.t().close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </div>

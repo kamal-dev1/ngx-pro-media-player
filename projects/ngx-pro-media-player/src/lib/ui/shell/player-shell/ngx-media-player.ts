@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -25,8 +26,8 @@ import { I18nService } from '../../../i18n/i18n.service';
 })
 export class NgxMediaPlayer {
   readonly i18n = inject(I18nService);
-  /** کراس‌فید ثابت (ثانیه) — فقط در کد؛ در UI تنظیم نمی‌شود */
-  private static readonly CROSSFADE_SECONDS = 2.5;
+  /** مقدار پیش‌فرض کراس‌فید (ثانیه) در صورتی که کاربر مقداری ندهد */
+  private static readonly DEFAULT_CROSSFADE_SECONDS = 2.5;
 
   @ViewChild('videoPlayer')
   set videoPlayerRef(ref: ElementRef<HTMLVideoElement> | undefined) {
@@ -36,6 +37,12 @@ export class NgxMediaPlayer {
   readonly mediaList = input<MediaItem[]>([]);
   readonly language = input<'fa' | 'en'>('fa');
   readonly direction = input<'rtl' | 'ltr'>('rtl');
+  readonly crossfadeSeconds = input<number>(NgxMediaPlayer.DEFAULT_CROSSFADE_SECONDS);
+  readonly closed = output<void>();
+  readonly liked = output<MediaItem>();
+  readonly unliked = output<MediaItem>();
+  readonly addedToPlaylist = output<MediaItem>();
+  readonly removedFromPlaylist = output<MediaItem>();
 
   readonly store = inject(PlayerStore);
   private readonly audio = inject(AudioEngine);
@@ -43,13 +50,18 @@ export class NgxMediaPlayer {
   private lastEndedTick = 0;
 
   readonly defaultCover =
-    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320"><rect width="100%" height="100%" fill="%23171717"/><text x="50%" y="50%" fill="%23ffffff" text-anchor="middle" dominant-baseline="middle" font-size="28">No Cover</text></svg>';
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">' +
+    '<rect width="320" height="320" fill="%23171717"/>' +
+    '<g transform="translate(118,118) scale(2.4)">' +
+    '<path fill="%235DADEC" d="M34.209.206L11.791 2.793C10.806 2.907 10 3.811 10 4.803v18.782C9.09 23.214 8.075 23 7 23c-3.865 0-7 2.685-7 6 0 3.314 3.135 6 7 6s7-2.686 7-6V10.539l18-2.077v13.124c-.91-.372-1.925-.586-3-.586-3.865 0-7 2.685-7 6 0 3.314 3.135 6 7 6s7-2.686 7-6V1.803c0-.992-.806-1.71-1.791-1.597z"/>' +
+    '</g></svg>';
     private lastMediaList: MediaItem[] | null = null;
     buffered = signal(0);
   constructor() {
 
-
-    this.store.crossfadeSeconds.set(NgxMediaPlayer.CROSSFADE_SECONDS);
+    effect(() => {
+      this.store.crossfadeSeconds.set(this.crossfadeSeconds());
+    });
 
     effect(() => {
       this.store.language.set(this.language());
@@ -174,6 +186,31 @@ export class NgxMediaPlayer {
 
   toggleMini(): void {
     this.store.isMinimized.update((v) => !v);
+  }
+
+  closePlayer(): void {
+    this.audio.pause();
+    this.closed.emit();
+  }
+
+  likeCurrent(): void {
+    const media = this.store.currentMedia();
+    if (!media) return;
+    if (media.liked) {
+      this.unliked.emit(media);
+      return;
+    }
+    this.liked.emit(media);
+  }
+
+  addCurrentToPlaylist(): void {
+    const media = this.store.currentMedia();
+    if (!media) return;
+    if (media.inPlaylist) {
+      this.removedFromPlaylist.emit(media);
+      return;
+    }
+    this.addedToPlaylist.emit(media);
   }
 
   onDragStart(index: number): void {

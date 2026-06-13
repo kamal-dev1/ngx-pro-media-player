@@ -275,6 +275,11 @@ input.seek[type='range']:active::-moz-range-thumb {
   color: var(--pm-muted);
 }
 
+.icon-btn--close:hover {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.12);
+}
+
 .icon-btn--repeat-one {
   position: relative;
 }
