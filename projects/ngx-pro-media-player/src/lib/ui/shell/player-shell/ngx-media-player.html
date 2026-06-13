@@ -45,6 +45,12 @@
               <h4>{{ item.title }}</h4>
               <p>{{ item.artist || '-' }}</p>
             </div>
+            <button type="button" class="icon-btn icon-btn--ghost icon-btn--close queue-item__remove" (click)="removeFromQueue(i, $event)" [attr.aria-label]="i18n.t().close" [title]="i18n.t().close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </li>
         </ul>
       </aside>

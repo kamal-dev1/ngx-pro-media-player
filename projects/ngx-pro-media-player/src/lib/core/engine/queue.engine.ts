@@ -21,6 +21,38 @@ export class QueueEngine {
     }
   }
 
+  async removeAt(index: number): Promise<MediaItem | null> {
+    const queue = this.store.queue();
+    if (index < 0 || index >= queue.length) {
+      return null;
+    }
+
+    const removedItem = queue[index];
+    const list = [...queue.slice(0, index), ...queue.slice(index + 1)];
+    const currentIndex = this.store.currentIndex();
+
+    this.store.queue.set(list);
+
+    if (!list.length) {
+      this.store.currentIndex.set(-1);
+      this.audio.pause();
+      return removedItem;
+    }
+
+    if (index === currentIndex) {
+      const nextIndex = Math.min(index, list.length - 1);
+      this.store.currentIndex.set(nextIndex);
+      this.store.currentTime.set(0);
+      this.store.duration.set(0);
+      this.store.isPlaying.set(false);
+      await this.audio.play(list[nextIndex]);
+    } else if (index < currentIndex) {
+      this.store.currentIndex.set(currentIndex - 1);
+    }
+
+    return removedItem;
+  }
+
 
   async playIndex(index: number): Promise<void> {
     const queue = this.store.queue();

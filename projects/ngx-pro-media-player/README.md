@@ -61,6 +61,7 @@ Pass a single track as a one-item array:
 | `unliked` | `MediaItem` | Emitted instead of `liked` when the user clicks the like button while `item.liked` is `true` — i.e. the button acts as a toggle. |
 | `addedToPlaylist` | `MediaItem` | Emitted with the currently playing track when the user clicks the "add to playlist" button and `item.inPlaylist` is **not** `true`. The consumer decides what to do (e.g. call an API). |
 | `removedFromPlaylist` | `MediaItem` | Emitted instead of `addedToPlaylist` when the user clicks the button while `item.inPlaylist` is `true` — i.e. the button acts as a toggle. |
+| `removedFromQueue` | `MediaItem` | Emitted when the user clicks the ✕ on a queue item to remove it. The player removes the item from playback immediately; the consumer should remove it from `mediaList` too so it doesn't get re-added. |
 
 ```html
 <ngx-media-player
@@ -72,6 +73,7 @@ Pass a single track as a one-item array:
   (unliked)="onUnlike($event)"
   (addedToPlaylist)="onAddToPlaylist($event)"
   (removedFromPlaylist)="onRemoveFromPlaylist($event)"
+  (removedFromQueue)="onRemoveFromQueue($event)"
 />
 ```
 
@@ -98,6 +100,10 @@ onRemoveFromPlaylist(track: MediaItem): void {
   this.http.delete(`/api/playlists/current/items/${track.id}`).subscribe(() => {
     track.inPlaylist = false;
   });
+}
+
+onRemoveFromQueue(track: MediaItem): void {
+  this.tracks = this.tracks.filter(t => t.id !== track.id);
 }
 ```
 

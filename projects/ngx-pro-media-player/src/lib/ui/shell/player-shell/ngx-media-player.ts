@@ -43,6 +43,7 @@ export class NgxMediaPlayer {
   readonly unliked = output<MediaItem>();
   readonly addedToPlaylist = output<MediaItem>();
   readonly removedFromPlaylist = output<MediaItem>();
+  readonly removedFromQueue = output<MediaItem>();
 
   readonly store = inject(PlayerStore);
   private readonly audio = inject(AudioEngine);
@@ -70,9 +71,25 @@ export class NgxMediaPlayer {
     });
     effect(() => {
       const list = this.mediaList();
-      if (list !== this.lastMediaList) {
-        this.lastMediaList = list;
-        this.queue.setQueue(list);
+      if (list === this.lastMediaList) return;
+
+      const previous = this.lastMediaList;
+      this.lastMediaList = list;
+      this.queue.setQueue(list);
+
+      if (!list.length) return;
+
+      if (!previous || !previous.length) {
+        void this.queue.playIndex(0);
+        return;
+      }
+
+      if (list.length > previous.length) {
+        const previousIds = new Set(previous.map((item) => item.id));
+        const newIndex = list.findIndex((item) => !previousIds.has(item.id));
+        if (newIndex !== -1) {
+          void this.queue.playIndex(newIndex);
+        }
       }
     });
 
@@ -215,6 +232,14 @@ export class NgxMediaPlayer {
 
   onDragStart(index: number): void {
     this.store.dragIndex.set(index);
+  }
+
+  async removeFromQueue(index: number, event: Event): Promise<void> {
+    event.stopPropagation();
+    const removed = await this.queue.removeAt(index);
+    if (removed) {
+      this.removedFromQueue.emit(removed);
+    }
   }
 
 

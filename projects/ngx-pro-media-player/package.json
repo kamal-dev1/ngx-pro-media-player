@@ -7,7 +7,7 @@
   "bugs": {
     "url": "https://github.com/kamal-dev1/ngx-pro-media-player/issues"
   },
-  "version": "0.0.12",
+  "version": "0.0.13",
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0"

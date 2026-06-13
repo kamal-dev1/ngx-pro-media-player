@@ -471,7 +471,7 @@ input.vol[type='range']::-moz-range-thumb {
 
 .queue-panel li {
   display: grid;
-  grid-template-columns: 48px 1fr;
+  grid-template-columns: 48px 1fr auto;
   gap: 12px;
   align-items: center;
   padding: 8px 10px;
@@ -495,6 +495,17 @@ input.vol[type='range']::-moz-range-thumb {
   height: 48px;
   border-radius: 6px;
   object-fit: cover;
+}
+
+.queue-item__remove {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.queue-item__remove svg {
+  width: 18px;
+  height: 18px;
 }
 
 .queue-panel h4,

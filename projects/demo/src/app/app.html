@@ -97,4 +97,4 @@
   </div>
   
   <router-outlet />
-  <ngx-media-player [mediaList]="mediaList()" [language]="language()" [direction]="direction()" (closed)="mediaList.set([])" />
+  <ngx-media-player [mediaList]="mediaList()" [language]="language()" [direction]="direction()" (closed)="mediaList.set([])" (removedFromQueue)="removeMedia($event.id)" />
