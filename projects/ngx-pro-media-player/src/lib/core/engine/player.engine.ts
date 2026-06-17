@@ -21,8 +21,8 @@ export class AudioEngine {
   private progressSource: HTMLMediaElement | null = null;
 
   constructor() {
-    this.audioA.preload = 'auto';
-    this.audioB.preload = 'auto';
+    this.audioA.preload = 'metadata';
+    this.audioB.preload = 'metadata';
     this.bindEvents(this.audioA);
     this.bindEvents(this.audioB);
   }
@@ -188,11 +188,16 @@ export class AudioEngine {
       player.volume = this.store.volume();
       player.muted = this.store.muted();
       player.playbackRate = this.store.playbackRate();
-      await player.play();
+      try {
+        await player.play();
+      } catch {
+        if (sessionId !== this.playSessionId) return;
+        this.markPlaying(false);
+        return;
+      }
       if (sessionId !== this.playSessionId) return;
       this.markPlaying(!player.paused);
       this.updateMediaSession(media);
-      this.notify(media);
       return;
     }
 
@@ -214,7 +219,6 @@ export class AudioEngine {
     const ps: HTMLMediaElement | null = this.progressSource as HTMLMediaElement | null;
     this.markPlaying(ps != null ? !ps.paused : false);
     this.updateMediaSession(media);
-    this.notify(media);
   }
 
   pause(): void {
@@ -224,6 +228,9 @@ export class AudioEngine {
 
   resume(): void {
     const el = this.getActiveElement();
+    if (el.readyState === 0 && el.src) {
+      el.load();
+    }
     void el
       .play()
       .then(() => {
@@ -421,17 +428,4 @@ export class AudioEngine {
     }
   }
 
-  private notify(media: MediaItem): void {
-    if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'granted') {
-      void new Notification(media.title, {
-        body: media.artist ?? '',
-        icon: media.cover,
-      });
-      return;
-    }
-    if (Notification.permission !== 'denied') {
-      void Notification.requestPermission();
-    }
-  }
 }

@@ -280,6 +280,15 @@ input.seek[type='range']:active::-moz-range-thumb {
   background: rgba(255, 71, 87, 0.12);
 }
 
+.icon-btn--liked {
+  color: #ff4757;
+}
+
+.icon-btn--liked:hover {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.12);
+}
+
 .icon-btn--repeat-one {
   position: relative;
 }
