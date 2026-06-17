@@ -38,6 +38,7 @@ export class NgxMediaPlayer {
   readonly language = input<'fa' | 'en'>('fa');
   readonly direction = input<'rtl' | 'ltr'>('rtl');
   readonly crossfadeSeconds = input<number>(NgxMediaPlayer.DEFAULT_CROSSFADE_SECONDS);
+  readonly allowDownload = input<boolean>(false);
   readonly closed = output<void>();
   readonly liked = output<MediaItem>();
   readonly unliked = output<MediaItem>();

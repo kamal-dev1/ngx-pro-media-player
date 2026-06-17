@@ -49,6 +49,7 @@ Pass a single track as a one-item array:
 | `language` | `'en' \| 'fa'` | `'fa'` | UI language |
 | `direction` | `'ltr' \| 'rtl'` | `'rtl'` | Text direction |
 | `crossfadeSeconds` | `number` | `2.5` | Crossfade duration between tracks (seconds) |
+| `allowDownload` | `boolean` | `false` | Show a download button that lets the user download the currently playing media file directly from its URL |
 
 ---
 
@@ -177,4 +178,13 @@ const tracks: MediaItem[] = [
 ## Support
 
 If this project saved you some time, consider buying me a coffee ☕
+
+---
+
+> **Note for maintainers:** `projects/ngx-pro-media-player/README.md` is the single source of truth.
+> After editing it, copy it to the workspace root to keep GitHub in sync:
+> ```powershell
+> cp projects/ngx-pro-media-player/README.md README.md
+> ```
+> The build (`ng build ngx-pro-media-player`) automatically copies it to `dist/` for npm.
 

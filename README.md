@@ -48,6 +48,67 @@ Pass a single track as a one-item array:
 | `mediaList` | `MediaItem[]` | `[]` | List of tracks / single track |
 | `language` | `'en' \| 'fa'` | `'fa'` | UI language |
 | `direction` | `'ltr' \| 'rtl'` | `'rtl'` | Text direction |
+| `crossfadeSeconds` | `number` | `2.5` | Crossfade duration between tracks (seconds) |
+| `allowDownload` | `boolean` | `false` | Show a download button that lets the user download the currently playing media file directly from its URL |
+
+---
+
+## Outputs
+
+| Output | Payload | Description |
+|---|---|---|
+| `closed` | `void` | Emitted when the user closes the player (close button). Playback is paused automatically; the consumer is responsible for clearing `mediaList` if the player should disappear. |
+| `liked` | `MediaItem` | Emitted with the currently playing track when the user clicks the like button and `item.liked` is **not** `true`. The player does not call any API itself — handle the request (e.g. send it to your backend) in your own handler. |
+| `unliked` | `MediaItem` | Emitted instead of `liked` when the user clicks the like button while `item.liked` is `true` — i.e. the button acts as a toggle. |
+| `addedToPlaylist` | `MediaItem` | Emitted with the currently playing track when the user clicks the "add to playlist" button and `item.inPlaylist` is **not** `true`. The consumer decides what to do (e.g. call an API). |
+| `removedFromPlaylist` | `MediaItem` | Emitted instead of `addedToPlaylist` when the user clicks the button while `item.inPlaylist` is `true` — i.e. the button acts as a toggle. |
+| `removedFromQueue` | `MediaItem` | Emitted when the user clicks the ✕ on a queue item to remove it. The player removes the item from playback immediately; the consumer should remove it from `mediaList` too so it doesn't get re-added. |
+
+```html
+<ngx-media-player
+  [mediaList]="tracks"
+  language="en"
+  direction="ltr"
+  (closed)="tracks = []"
+  (liked)="onLike($event)"
+  (unliked)="onUnlike($event)"
+  (addedToPlaylist)="onAddToPlaylist($event)"
+  (removedFromPlaylist)="onRemoveFromPlaylist($event)"
+  (removedFromQueue)="onRemoveFromQueue($event)"
+/>
+```
+
+```typescript
+onLike(track: MediaItem): void {
+  this.http.post('/api/likes', { trackId: track.id }).subscribe(() => {
+    track.liked = true;
+  });
+}
+
+onUnlike(track: MediaItem): void {
+  this.http.delete(`/api/likes/${track.id}`).subscribe(() => {
+    track.liked = false;
+  });
+}
+
+onAddToPlaylist(track: MediaItem): void {
+  this.http.post('/api/playlists/current/items', { trackId: track.id }).subscribe(() => {
+    track.inPlaylist = true;
+  });
+}
+
+onRemoveFromPlaylist(track: MediaItem): void {
+  this.http.delete(`/api/playlists/current/items/${track.id}`).subscribe(() => {
+    track.inPlaylist = false;
+  });
+}
+
+onRemoveFromQueue(track: MediaItem): void {
+  this.tracks = this.tracks.filter(t => t.id !== track.id);
+}
+```
+
+> Note: the player **hides itself automatically** whenever `mediaList` is empty — there's no separate "visible" flag.
 
 ---
 
@@ -65,6 +126,8 @@ interface MediaItem {
   type: 'audio' | 'video';
   duration?: number;
   lyrics?: LyricLine[];
+  liked?: boolean;        // mark as already liked — hides the liked action / shows it as active
+  inPlaylist?: boolean;   // mark as already in playlist — hides the add action / shows it as active
 }
 
 interface LyricLine {
@@ -116,4 +179,12 @@ const tracks: MediaItem[] = [
 
 If this project saved you some time, consider buying me a coffee ☕
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/your-username)
+---
+
+> **Note for maintainers:** `projects/ngx-pro-media-player/README.md` is the single source of truth.
+> After editing it, copy it to the workspace root to keep GitHub in sync:
+> ```powershell
+> cp projects/ngx-pro-media-player/README.md README.md
+> ```
+> The build (`ng build ngx-pro-media-player`) automatically copies it to `dist/` for npm.
+

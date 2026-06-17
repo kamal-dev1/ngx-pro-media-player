@@ -19,6 +19,7 @@ const translations = {
     volume: 'صدا',
     like: 'پسندیدن',
     addToPlaylist: 'افزودن به پلی‌لیست',
+    download: 'دانلود',
   },
   en: {
     queue: 'Queue',
@@ -36,6 +37,7 @@ const translations = {
     volume: 'Volume',
     like: 'Like',
     addToPlaylist: 'Add to Playlist',
+    download: 'Download',
   },
 } as const;
 
